@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Restaurant;
 use App\Models\Order;
 use App\Models\User;
+use App\Models\OrderItem;
 
 class Order extends Model
 {
@@ -14,11 +15,12 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'menu_id',
         'amount',
         'payment_status',
         'quantity',
         'delivery_status',
+        'delivery_location',
+        'paid_at'
     ];
 
     protected $guarded = [
@@ -30,11 +32,11 @@ class Order extends Model
         return $this->belongsTo(Restaurant::class);
     }
 
-    public function orders(){
-        return $this->hasMany(Order::class);
-    }
-
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function orderItems(){
+        return $this->hasMany(OrderItem::class);
     }
 }

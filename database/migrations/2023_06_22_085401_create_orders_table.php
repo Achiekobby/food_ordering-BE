@@ -17,12 +17,11 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreign('user_id')->on('users')->references('id')->cascadeOnDelete();
 
-            $table->foreignId('menu_id');
-            $table->foreign('menu_id')->on('menus')->references('id')->cascadeOnDelete();
-
             $table->string('amount');
             $table->enum('payment_status',['paid','not_paid']);
+            $table->dateTime('paid_at')->nullable();
             $table->string('quantity');
+            $table->string('delivery_location');
             $table->enum('delivery_status',['pending','transit','delivered']);
 
             $table->softDeletes();
