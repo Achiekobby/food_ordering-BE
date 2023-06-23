@@ -94,9 +94,13 @@ class OrderController extends Controller
             if(!$order_id){
                 return response()->json(['status'=>'failed','message'=>'Sorry, This request demands an order_id'],200);
             }
-            $order =Order::query()->where('id',$order_id)->first();
+            $user = auth()->guard('api')->user();
+            if(!$user){
+                return response()->json(['status'=>'failed','message'=>'User not found']);
+            }
+            $order =Order::query()->where('id',$order_id)->where('user_id',$user->id)->where('payment_status','not_paid')->first();
             if(!$order){
-                return response()->json(['status'=>'failed','error'=>'Order not found'],404);
+                return response()->json(['status'=>'failed','error'=>'Order not found or payment has already been recorded for it'],404);
             }
 
             if($request->amount < $order->amount){
@@ -117,6 +121,8 @@ class OrderController extends Controller
             return response()->json(['status'=>'failed','message'=>$e->getMessage()],500);
         }
     }
+
     //TODO:: HANDLING ORDER FULFILLMENT
+
 
 }

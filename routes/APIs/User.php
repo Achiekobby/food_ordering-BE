@@ -12,4 +12,5 @@ Route::group(['prefix'=>'user','middleware'=>['authCheck']],function(){
 
     //*Ordering
     Route::post('make_order',[OrderController::class, 'make_order']);
+    Route::post('order/record_payment',[OrderController::class, 'record_payment']);
 });
