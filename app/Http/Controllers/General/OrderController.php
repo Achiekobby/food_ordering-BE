@@ -84,5 +84,39 @@ class OrderController extends Controller
 
     }
 
+    //TODO:: RECORD PAYMENT OF THE ORDER
+    public function record_payment(Request $request){
+        try{
+            $rules = [
+                'amount'=>'required',
+            ];
+            $order_id = request()->input('order_id');
+            if(!$order_id){
+                return response()->json(['status'=>'failed','message'=>'Sorry, This request demands an order_id'],200);
+            }
+            $order =Order::query()->where('id',$order_id)->first();
+            if(!$order){
+                return response()->json(['status'=>'failed','error'=>'Order not found'],404);
+            }
+
+            if($request->amount < $order->amount){
+                return response()->json(['status'=>'failed','error'=>'The amount entered cannot be less than the amount to be paid'],403);
+            }
+            if($request->amount > $order->amount){
+                return response()->json(['status'=>'failed','error'=>'The amount entered exceeds the amount to be paid'],403);
+            }
+            $order->update(['payment_status'=>'paid','paid_at'=>Carbon::now()->format('Y-m-d H:i:s')]);
+            $order_items = OrderItem::where('order_id',$order->id)->get();
+
+            foreach($order_items as $item){
+                $item->update(['payment_status'=>'paid']);
+            }
+            return response()->json(['status'=>'success','message'=>'Payment for this order has been recorded'],200);
+
+        }catch(\Exception $e){
+            return response()->json(['status'=>'failed','message'=>$e->getMessage()],500);
+        }
+    }
     //TODO:: HANDLING ORDER FULFILLMENT
+
 }
